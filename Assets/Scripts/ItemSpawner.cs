@@ -4,16 +4,15 @@ using Random = UnityEngine.Random;
 
 public class ItemSpawner : MonoBehaviour
 {
-    private float _spawnRate = 2f;
     public List<GameObject> availableItems = new List<GameObject>();
     
     private Vector3 _initialPosition = new Vector3(1f, 35f, 0f);
     private float _maxZPos = 17f;
-    private float _minZPos = -17f;
+    private float _minZPos = -11f;
 
     private void Start()
     {
-        InvokeRepeating("SpawnItem", 0, _spawnRate);
+        InvokeRepeating("SpawnItem", 0, 1);
     }
 
     [ContextMenu("Spawn Random Item")]

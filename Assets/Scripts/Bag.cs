@@ -1,34 +1,41 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Bag : MonoBehaviour
 {
-    private readonly Vector3 _defaultBagPosition = new Vector3(4f, 0f, 0f);
+    private GameManager _gameManager;
+    private readonly Vector3 _defaultBagPosition = new Vector3(4f, 1.2f, 0f);
     private float maxZPos = 18f;
-    private float minZPos = -18f;
+    private float minZPos = -11f;
     private Transform _transform;
-    private Renderer _renderer;
 
     public float speed;
     private float _weight;
     private float _maxWeight;
 
+    public Camera camRef;
+    public Image bagUI;
+    public Slider weightUI;
+    
+    private ScoreManager _score;
+
     private void Awake()
     {
-        _weight = 0;
-        _maxWeight = 30;
-        speed = 50f;
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _score = GetComponent<ScoreManager>();
         _transform = transform;
-        _renderer = GetComponent<Renderer>();
     }
     
     void Start()
     {
-        _transform.position = _defaultBagPosition;
+        NewBag();
     }
     
     void Update()
     {
         HandleMovement();
+        HandleBagUI();
+        HandleBagClose();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -54,33 +61,46 @@ public class Bag : MonoBehaviour
         }
     }
 
+    private void HandleBagUI()
+    {
+        Vector3 bagPos = camRef.WorldToScreenPoint(_transform.position);
+        bagUI.transform.position = bagPos + new Vector3(0, 29, 0);
+    }
+
     private void AddItemToBag(Item item)
     {
+        if (_weight + item.Weight > _maxWeight)
+        {
+            BreakBag();
+            return;
+        }
         UpdateWeight(item);
         UpdateSpeed();
-        if (_weight > _maxWeight) DestroyBag();
-        ScoreManager.Instance.UpdateScore(5, 5);
+        _score.UpdateScore(5);
     }
 
-    private void Close()
+    private void HandleBagClose()
     {
-        Debug.Log("Player wants to close current bag and open another");
+        if (!Input.GetKeyDown(KeyCode.Space)) return;
+        _gameManager.gameScore.UpdateScore(_score.Score);
+        NewBag();
     }
 
-    private void DestroyBag()
+    private void BreakBag()
     {
-        Debug.Log("The player broke the bag");
+        NewBag();
     }
 
     private void UpdateWeight(Item item)
     {
         _weight += item.Weight;
-        var bagCapacityPercent = (_weight * 100) / _maxWeight;
-
+        weightUI.SetValueWithoutNotify(_weight);
+        
         // Editor does not like Switch here with > < signs
-        if (bagCapacityPercent < 50) _renderer.material.color = Color.green;
-        else if (bagCapacityPercent > 90) _renderer.material.color = Color.red;
-        else _renderer.material.color = Color.yellow;
+        var bagCapacityPercent = (_weight * 100) / _maxWeight;
+        if (bagCapacityPercent < 25) _score.UpdateScoreMultiplier(1);
+        else if (bagCapacityPercent > 70) _score.UpdateScoreMultiplier(3);
+        else _score.UpdateScoreMultiplier(2);
     }
 
     private void UpdateSpeed()
@@ -90,5 +110,17 @@ public class Bag : MonoBehaviour
 
         if (speed - newSpeed < 5) return;
         speed -= newSpeed;
+    }
+
+    private void NewBag()
+    {
+        _weight = 0;
+        _maxWeight = 30;
+        _score.Reset();
+        _transform.position = _defaultBagPosition;
+        weightUI.value = _weight;
+        weightUI.minValue = 0;
+        weightUI.maxValue = _maxWeight;
+        speed = 50f;
     }
 }
