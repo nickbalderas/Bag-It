@@ -10,12 +10,6 @@ public class ItemSpawner : MonoBehaviour
     private float _maxZPos = 17f;
     private float _minZPos = -11f;
 
-    private void Start()
-    {
-        InvokeRepeating("SpawnItem", 0, 1);
-    }
-
-    [ContextMenu("Spawn Random Item")]
     public void SpawnItem()
     {
         var randomPosition = _initialPosition + new Vector3(0, 0, Random.Range(_minZPos, _maxZPos + 1));

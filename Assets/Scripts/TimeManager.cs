@@ -5,23 +5,24 @@ using UnityEngine;
 public class TimeManager : MonoBehaviour
 {
     public float duration;
-    public float TimeRemaining { get; private set; }
+    private float TimeRemaining { get; set; }
     public Action HandleCompletion;
     public TextMeshProUGUI timerText;
-    
-    // Start is called before the first frame update
+    public bool IsActive { get; set; }
+
     void Start()
     {
         TimeRemaining = duration;
     }
 
-    // Update is called once per frame
     void Update()
     {
+        if (!IsActive) return;
+        
         if (TimeRemaining > 0)
         {
-            TimeRemaining -= Time.deltaTime;
             UpdateTimeDisplay();
+            TimeRemaining -= Time.deltaTime;
         }
         else TimeExpired();
     }
@@ -38,6 +39,7 @@ public class TimeManager : MonoBehaviour
 
     private void TimeExpired()
     {
+        IsActive = false;
         TimeRemaining = 0;
         HandleCompletion();
     }

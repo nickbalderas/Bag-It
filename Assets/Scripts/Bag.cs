@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Bag : MonoBehaviour
 {
     private GameManager _gameManager;
-    private readonly Vector3 _defaultBagPosition = new Vector3(4f, 1.2f, 0f);
+    private readonly Vector3 _defaultBagPosition = new Vector3(4f, 2.5f, 0f);
     private float maxZPos = 18f;
     private float minZPos = -11f;
     private Transform _transform;
@@ -18,6 +19,8 @@ public class Bag : MonoBehaviour
     public Slider weightUI;
     
     private ScoreManager _score;
+
+    private float _lastItemWeight;
 
     private void Awake()
     {
@@ -33,6 +36,7 @@ public class Bag : MonoBehaviour
     
     void Update()
     {
+        if (!_gameManager.GameTimer.IsActive) return;
         HandleMovement();
         HandleBagUI();
         HandleBagClose();
@@ -64,25 +68,31 @@ public class Bag : MonoBehaviour
     private void HandleBagUI()
     {
         Vector3 bagPos = camRef.WorldToScreenPoint(_transform.position);
-        bagUI.transform.position = bagPos + new Vector3(0, 29, 0);
+        bagUI.transform.position = bagPos + new Vector3(0, 0, 0);
     }
 
     private void AddItemToBag(Item item)
     {
-        if (_weight + item.Weight > _maxWeight)
+        if (_lastItemWeight > 0 && item.Weight > _lastItemWeight || _weight + item.Weight > _maxWeight)
         {
             BreakBag();
             return;
         }
         UpdateWeight(item);
         UpdateSpeed();
+        _lastItemWeight = item.Weight;
         _score.UpdateScore(5);
     }
 
     private void HandleBagClose()
     {
         if (!Input.GetKeyDown(KeyCode.Space)) return;
-        _gameManager.gameScore.UpdateScore(_score.Score);
+        
+        var bagCapacityPercent = (_weight * 100) / _maxWeight;
+        if (bagCapacityPercent < 25) _score.ApplyPenalty(10);
+        else if (bagCapacityPercent < 70) _score.ApplyPenalty(5);
+
+        _gameManager.GameScore.UpdateScore(_score.Score);
         NewBag();
     }
 
@@ -114,6 +124,7 @@ public class Bag : MonoBehaviour
 
     private void NewBag()
     {
+        _lastItemWeight = 0;
         _weight = 0;
         _maxWeight = 30;
         _score.Reset();
