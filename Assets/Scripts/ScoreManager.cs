@@ -46,4 +46,14 @@ public class ScoreManager : MonoBehaviour
         scoreDisplay.text = "0";
         scoreMultiplierDisplay.text = "x1";
     }
+
+    public void ApplyPenalty(int penalty)
+    {
+        if (Score - penalty < 0)
+        {
+            Score = 0;
+            return;
+        }
+        Score -= penalty;
+    }
 }
