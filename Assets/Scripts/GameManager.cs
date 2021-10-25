@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
         _countdownTimer.IsActive = false;
 
         GameTimer = GetComponent<TimeManager>();
-        GameTimer.duration = 10.0f;
+        GameTimer.duration = 60.0f;
         GameTimer.HandleCompletion = GameOver;
         GameTimer.IsActive = false;
     }
