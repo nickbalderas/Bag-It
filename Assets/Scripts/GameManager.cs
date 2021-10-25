@@ -87,6 +87,16 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
     }
 
+    public void ShowHowToPlay()
+    {
+        _gameUI.howToPlay.SetActive(true);
+    }
+
+    public void HideHowToPlay()
+    {
+        _gameUI.howToPlay.SetActive(false);
+    }
+
     public void RestartGame()
     {
         SceneManager.LoadScene(1);

@@ -7,6 +7,7 @@ public class GameUI : MonoBehaviour
     public GameObject gamePauseMenu;
     public GameObject gameOver;
     public GameObject countdown;
+    public GameObject howToPlay;
 
     public TextMeshProUGUI finalScore;
 
