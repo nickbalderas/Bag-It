@@ -138,7 +138,7 @@ public class Bag : MonoBehaviour
     {
         _lastItemWeight = 0;
         _weight = 0;
-        _maxWeight = 30;
+        _maxWeight = 50;
         weightUI.value = _weight;
         weightUI.minValue = 0;
         weightUI.maxValue = _maxWeight;
