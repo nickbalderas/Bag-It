@@ -4,7 +4,8 @@ using UnityEngine;
 public class ScoreManager : MonoBehaviour
 {
     public int Score { get; private set; }
-    private int ScoreMultiplier { get; set; }
+    public int ScoreMultiplier { get; private set; }
+    public int Penalty { get; private set; }
     public TextMeshProUGUI scoreDisplay;
     public TextMeshProUGUI scoreMultiplierDisplay;
 
@@ -43,17 +44,18 @@ public class ScoreManager : MonoBehaviour
     {
         Score = 0;
         ScoreMultiplier = 0;
-        scoreDisplay.text = "0";
-        scoreMultiplierDisplay.text = "x1";
+        if (scoreDisplay) scoreDisplay.text = "0";
+        if (scoreMultiplierDisplay) scoreMultiplierDisplay.text = "x1";
     }
 
     public void ApplyPenalty(int penalty)
     {
-        if (Score - penalty < 0)
+        Penalty = penalty;
+        if (Score + penalty < 0)
         {
             Score = 0;
             return;
         }
-        Score -= penalty;
+        Score += penalty;
     }
 }
